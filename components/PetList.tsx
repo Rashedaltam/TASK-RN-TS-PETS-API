@@ -5,22 +5,47 @@ import {
   TextInput,
   TouchableOpacity,
 } from "react-native";
-import React, { useState } from "react";
-import pets from "@/data/pets";
+import React, { useEffect, useState } from "react";
 import PetItem from "./PetItem";
+import { Allpets } from "../api/pets";
+
+interface Pet {
+  id: number;
+  name: string;
+  description: string;
+  type: string;
+  image: string;
+  image2: string;
+}
 
 const PetList = () => {
   const [search, setSearch] = useState("");
   const [type, setType] = useState("");
-  const [displayPets, setDisplayPets] = useState(pets);
+  const [displayPets, setDisplayPets] = useState<Pet[]>([]);
+  // Salman Notes
+  // create a function to call getAllPets
+  // hold the data
+  // data -> serDisplayPers(data)
 
-  const petList = displayPets
-    .filter((pet) => pet.name.toLowerCase().includes(search.toLowerCase()))
+  const handleGetPets = async () => {
+    const data = await Allpets();
+    setDisplayPets(data);
+  };
+
+  useEffect(() => {
+    const getAllPets = async () => {
+      const data = await Allpets();
+      setDisplayPets(data);
+    };
+    getAllPets();
+  }, []);
+
+  const petList = displayPets.filter((pet) => pet.name.toLowerCase().includes(search.toLowerCase()))
     .filter((pet) => pet.type.toLowerCase().includes(type.toLowerCase()))
-    .map((pet) => (
+    .map((p) => (
       <PetItem
-        key={pet.id}
-        pet={pet}
+        key={p.id}
+        pet={p}
         setDisplayPets={setDisplayPets}
         displayPets={displayPets}
       />
@@ -64,8 +89,12 @@ const PetList = () => {
           <Text>Rabbit</Text>
         </TouchableOpacity>
       </ScrollView>
+      <TouchableOpacity onPress={() => handleGetPets()}>
+        <Text>Get All Pets</Text>
+      </TouchableOpacity>
 
-      {/* Pet List */}
+      {/* Pet List somthing is wrong here, either the API is not working while im doing the task which happened before or my code is wrong*/}
+
       {petList}
     </ScrollView>
   );

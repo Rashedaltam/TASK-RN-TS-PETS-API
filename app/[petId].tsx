@@ -1,11 +1,29 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import React from "react";
-import { useLocalSearchParams } from "expo-router";
-import pets from "@/data/pets";
+import React, { useEffect, useState } from "react";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { Onepets, OnepetsDelete } from "@/api/pets";
 
 const PetDetails = () => {
   const { petId } = useLocalSearchParams();
-  const pet = pets[0];
+  const router = useRouter();
+  const [pet, setPet] = useState<any>(null);
+
+  const getOnePet = async (id: number) => {
+    const data = await Onepets(id);
+    setPet(data);
+  };
+
+  const deleteOnePet = async (id: number) => {
+    await OnepetsDelete(id);
+    router.replace("/");
+  };
+
+  useEffect(() => {
+    getOnePet(Number(petId));
+  }, []);
+
+  if (!pet) return <Text>Loading...</Text>;
+
   return (
     <View style={styles.container}>
       <Text style={styles.name}>{pet.name}</Text>
@@ -16,6 +34,18 @@ const PetDetails = () => {
       <View>
         <TouchableOpacity style={styles.button}>
           <Text style={styles.buttonText}>Delete</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => getOnePet(Number(petId))}
+          style={styles.button}
+        >
+          <Text style={styles.buttonText}>Import Api Data</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => deleteOnePet(Number(petId))}
+          style={styles.button}
+        >
+          <Text style={styles.buttonText}>Delete a PET</Text>
         </TouchableOpacity>
       </View>
     </View>

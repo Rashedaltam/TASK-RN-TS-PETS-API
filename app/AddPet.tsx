@@ -5,9 +5,27 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import React from "react";
+import React, { useState } from "react";
+import { OnepetsPost } from "@/api/pets";
+import { useRouter } from "expo-router";
 
 const AddPet = () => {
+  const [name, setName] = useState("");
+  const [image, setImage] = useState("");
+  const [type, setType] = useState("");
+  const router = useRouter();
+
+  const handleAddPet = async () => {
+    const newPet = {
+      name,
+      image,
+      type,
+      adopted: 0,
+    };
+    await OnepetsPost(newPet);
+    router.replace("/"); // back to homepage
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Add Your Pet! </Text>
